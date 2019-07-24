@@ -37,3 +37,7 @@ class Movie < Entity
     set "director", value
   end
 end
+
+movie = Movie.new(1)
+movie.title = "天気の子"
+movie.derector = "新海誠"

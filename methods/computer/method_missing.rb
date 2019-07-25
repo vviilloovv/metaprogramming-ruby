@@ -5,11 +5,15 @@ class Computer
   end
 
   def method_missing
-    super if !@data_source.respond_to?("get_#{name}_info")
+    super unless @data_source.respond_to?("get_#{name}_info")
     info = @data_source.send("get_#{name}_info", @id)
     price = @data_source.send("get_#{name}_price", @id)
     result = "#{name.capitalize}: #{info} ($#{price})"
     return "* #{result}" if price >= 100
     result
+  end
+
+  def respond_to_missing?(method, include_private = false)
+    @data_source.respond_to?("get_#{method}_info") || super
   end
 end

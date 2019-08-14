@@ -13,12 +13,6 @@ class TestCheckedAttribute < Minitest::Test
     assert_equal 20, @bob.age
   end
 
-  def test_refuses_nil_values
-    assert_raises RuntimeError, "Invalid attribute" do
-      @bob.age = nil
-    end
-  end
-
   def test_refuses_false_values
     assert_raises RuntimeError, "Invalid attribute" do
       @bob.age = 17
@@ -26,5 +20,15 @@ class TestCheckedAttribute < Minitest::Test
   end
 end
 
-def add_checked_attribute(klass, attribute)
+def add_checked_attribute(klass, attribute, &validation)
+  klass.class_eval do
+    define_method "#{attribute}=" do |value|
+      raise "Invalid attribute" unless validation.call(value)
+      instance_variable_set("@#{attribute}", value)
+    end
+
+    define_method attribute do
+      instance_variable_get "@#{attribute}"
+    end
+  end
 end
